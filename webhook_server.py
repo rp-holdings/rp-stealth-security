@@ -100,12 +100,11 @@ def health_check():
 async def stripe_webhook(request: Request, stripe_signature: str = Header(None, alias="stripe-signature")):
     payload = await request.body()
 
-    # 署名検証
     if not STRIPE_WEBHOOK_SECRET:
         raise HTTPException(status_code=500, detail="STRIPE_WEBHOOK_SECRET is not configured")
 
     try:
-        event = stripe.Webhook.construct_event(
+        stripe_obj = stripe.Webhook.construct_event(
             payload=payload,
             sig_header=stripe_signature,
             secret=STRIPE_WEBHOOK_SECRET
@@ -113,6 +112,9 @@ async def stripe_webhook(request: Request, stripe_signature: str = Header(None, 
     except (ValueError, stripe.error.SignatureVerificationError) as err:
         print(f"[SECURITY ALERT] Webhook Signature Verification Failed: {str(err)}")
         raise HTTPException(status_code=400, detail="Invalid signature")
+
+    # Stripe オブジェクトを dict 型へ正規化（バージョン非互換の解消）
+    event = stripe_obj.to_dict() if hasattr(stripe_obj, "to_dict") else dict(stripe_obj)
 
     event_id = event.get("id")
 
@@ -123,10 +125,16 @@ async def stripe_webhook(request: Request, stripe_signature: str = Header(None, 
 
     # 決済完了イベントのハンドリング
     if event.get("type") == "checkout.session.completed":
-        session = event["data"]["obj" + "ect"]
-        
+        session_data = event.get("data", {}).get("object", {})
+        if hasattr(session_data, "to_dict"):
+            session_data = session_data.to_dict()
+
         # 顧客メールアドレスの抽出
-        customer_email = session.get("customer_details", {}).get("email") or session.get("customer_email")
+        customer_details = session_data.get("customer_details") or {}
+        if hasattr(customer_details, "to_dict"):
+            customer_details = customer_details.to_dict()
+
+        customer_email = customer_details.get("email") or session_data.get("customer_email")
         if not customer_email:
             customer_email = "unknown@rp-sec.com"
 
