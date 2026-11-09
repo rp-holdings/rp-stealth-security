@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rp-stealth-security"
+version = "9.0.0"
+authors = [
+  { name="RP Holdings", email="ops@rp-sec.com" },
+]
+description = "Next-gen Stealth Security Middleware for Web Frameworks and APIs"
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Security",
+]
+dependencies = [
+    "fastapi>=0.95.0",
+    "starlette>=0.26.0",
+    "cryptography>=41.0.0",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/rp-holdings/rp-stealth-security"
+"Bug Tracker" = "https://github.com/rp-holdings/rp-stealth-security/issues"
