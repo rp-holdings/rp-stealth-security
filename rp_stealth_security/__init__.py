@@ -1,5 +1,11 @@
-from .middleware import StealthSecurityMiddleware
-from .license_verifier import verify_license
-
+"""
+RP Stealth Security V9 Core Package
+"""
 __version__ = "9.0.0"
-__all__ = ["StealthSecurityMiddleware", "verify_license"]
+__author__ = "RP LLC"
+
+from .license_validator import LicenseValidator
+from .recon_barrier import ReconBarrier
+from .decoy_router import DecoyRouter
+
+__all__ = ["LicenseValidator", "ReconBarrier", "DecoyRouter"]
