@@ -72,7 +72,9 @@ async def handle_stripe_webhook(request: Request):
 
     if event["type"] == "checkout.session.completed":
         session = event["data"]["object"]
-        customer_email = session.get("customer_details", {}).get("email") or session.get("customer_email")
+        # session を辞書型に変換してから安全に取得
+        session_dict = session.to_dict() if hasattr(session, "to_dict") else dict(session)
+        customer_email = (session_dict.get("customer_details") or {}).get("email") or session_dict.get("customer_email")
         if customer_email:
             key = issue_license_key(customer_email)
             send_license_email(customer_email, key)
