@@ -26,8 +26,7 @@ RP Stealth Security V9 は、ゼロ露出・動的デコイルーティング技
 本製品はサブスクリプション方式で提供されています。決済完了後、Stripe Webhook により暗号学的ライセンスキーが即時自動発行され、ご登録メールアドレスへ送付されます。
 
 - **Enterprise Monthly License**: **¥49,800 / 月（税込）**
-- **決済リンク**: [RP Stealth Security V9 を購入する（Stripe安全決済）](https://buy.stripe.com/)
-  *(※上記URLをお手元の Stripe Payment Link の URL に差し替えてください)*
+- **決済リンク**: [RP Stealth Security V9 を購入する（Stripe安全決済）](https://buy.stripe.com/eVq4gz8ND2Nx9Vscr1f3a00)
 
 ---
 
@@ -49,7 +48,7 @@ RP Stealth Security V9 is a next-generation enterprise cyber defense suite equip
 Available via enterprise subscription. License keys are cryptographically generated (CSPRNG) and dispatched immediately upon payment confirmation.
 
 - **Enterprise License**: **JPY 49,800 / month**
-- **Direct Purchase**: [Subscribe via Stripe Secure Checkout](https://buy.stripe.com/)
+- **Direct Purchase**: [Subscribe via Stripe Secure Checkout](https://buy.stripe.com/eVq4gz8ND2Nx9Vscr1f3a00)
 
 ---
 
