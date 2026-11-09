@@ -20,7 +20,7 @@ app = FastAPI(
     redoc_url=None
 )
 
-# 署名シークレット
+# 署名シークレットのバリデーション
 STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET")
 if not STRIPE_WEBHOOK_SECRET or STRIPE_WEBHOOK_SECRET.startswith("whsec_YOUR"):
     print("[FATAL SECURITY ERROR] STRIPE_WEBHOOK_SECRET is not configured. Server refused to start.", file=sys.stderr)
@@ -45,7 +45,6 @@ def issue_cryptographic_license_key(customer_email: str) -> str:
     p4 = secrets.token_hex(4).upper()
     license_key = f"RP9-{p1}-{p2}-{p3}-{p4}"
 
-    # 自己整合性検証
     if not LicenseValidator.validate_format(license_key):
         raise ValueError("Generated key failed format validation.")
 
@@ -107,19 +106,25 @@ async def handle_stripe_webhook(request: Request):
     if not sig_header:
         raise HTTPException(status_code=400, detail="Missing Stripe-Signature header")
 
+    # 1. 署名検証
     try:
-        event = stripe.Webhook.construct_event(
+        raw_event = stripe.Webhook.construct_event(
             payload, sig_header, STRIPE_WEBHOOK_SECRET
         )
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Signature verification failed: {e}")
 
+    # 2. Stripe Event オブジェクトを安全に dict へ変換 (最新 SDK 対策)
+    event = raw_event.to_dict() if hasattr(raw_event, "to_dict") else dict(raw_event)
+
     event_id = event.get("id")
 
+    # 3. 冪等性チェック
     if event_id in PROCESSED_EVENT_IDS:
         print(f"[WEBHOOK IDEMPOTENT] Duplicate event {event_id} ignored.")
         return {"status": "already_processed"}
 
+    # 4. 決済完了イベント処理
     if event.get("type") == "checkout.session.completed":
         session = event.get("data", {}).get("object", {})
         session_dict = session.to_dict() if hasattr(session, "to_dict") else dict(session)
