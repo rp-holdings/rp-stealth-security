@@ -1,149 +1,147 @@
-"""
-RP Stealth Security V9 - Production License Automation Webhook Server
-Copyright (c) 2026 RP LLC. All rights reserved.
-"""
-
 import os
-import sys
+import json
 import secrets
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-from fastapi import FastAPI, Request, HTTPException
+import urllib.request
+import urllib.error
+from fastapi import FastAPI, Request, HTTPException, Header
 import stripe
 
-from rp_stealth_security.license_validator import LicenseValidator
+app = FastAPI(title="RP Stealth Security Server")
 
-app = FastAPI(
-    title="RP Stealth Security V9 - License Service",
-    docs_url=None,
-    redoc_url=None
-)
-
-# 署名シークレットのバリデーション
+# ---------------------------------------------------------------------------
+# 1. 環境変数取得
+# ---------------------------------------------------------------------------
 STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET")
-if not STRIPE_WEBHOOK_SECRET or STRIPE_WEBHOOK_SECRET.startswith("whsec_YOUR"):
-    print("[FATAL SECURITY ERROR] STRIPE_WEBHOOK_SECRET is not configured. Server refused to start.", file=sys.stderr)
-    sys.exit(1)
+RESEND_API_KEY = os.getenv("RESEND_API_KEY")
+MAIL_FROM = os.getenv("MAIL_FROM", "onboarding@resend.dev")
 
-# SMTP設定
-SMTP_HOST = os.getenv("SMTP_HOST", "localhost")
-SMTP_PORT = int(os.getenv("SMTP_PORT", "587"))
-SMTP_USER = os.getenv("SMTP_USER", "")
-SMTP_PASS = os.getenv("SMTP_PASS", "")
-FROM_EMAIL = os.getenv("FROM_EMAIL", "noreply@rp-sec.com")
-
-# 冪等性管理
-PROCESSED_EVENT_IDS = set()
+# 重複処理防止用キャッシュ (メモリ保持)
+PROCESSED_EVENTS = set()
 
 
-def issue_cryptographic_license_key(customer_email: str) -> str:
-    """CSPRNG (secrets) による128ビットエントロピーの暗号学的ライセンスキー発行"""
-    p1 = secrets.token_hex(4).upper()
-    p2 = secrets.token_hex(4).upper()
-    p3 = secrets.token_hex(4).upper()
-    p4 = secrets.token_hex(4).upper()
-    license_key = f"RP9-{p1}-{p2}-{p3}-{p4}"
-
-    if not LicenseValidator.validate_format(license_key):
-        raise ValueError("Generated key failed format validation.")
-
-    print("\n" + "=" * 50)
-    print(f"[SECURITY AUDIT] License Key Issued Successfully")
-    print(f"Customer:    {customer_email}")
-    print(f"License Key: {license_key}")
-    print("=" * 50 + "\n")
-    return license_key
+# ---------------------------------------------------------------------------
+# 2. CSPRNG ライセンスキー生成ロジック
+# ---------------------------------------------------------------------------
+def generate_license_key() -> str:
+    """
+    暗号論的疑似乱数生成器 (CSPRNG) によるセキュアなキー生成
+    フォーマット: RP9-XXXXXXXX-XXXXXXXX-XXXXXXXX-XXXXXXXX
+    """
+    blocks = [secrets.token_hex(4).upper() for _ in range(4)]
+    return f"RP9-{'-'.join(blocks)}"
 
 
-def send_license_email(customer_email: str, license_key: str):
-    """案内メール送信（ノンブロッキングフェイルセーフ）"""
-    subject = "【RP Stealth Security V9】ライセンスキー発行のご案内"
-    body = f"""この度は「RP Stealth Security V9」をご購入いただき誠にありがとうございます。
-
-お客様のライセンスキーを発行いたしました。
---------------------------------------------------
-ライセンスキー: {license_key}
-対象アカウント: {customer_email}
---------------------------------------------------
-
-本キーを製品の認証画面または設定ファイルに入力してご利用を開始してください。
-
-合同会社RP
-サポート: support@rp-sec.com
-"""
-    msg = MIMEMultipart()
-    msg["From"] = FROM_EMAIL
-    msg["To"] = customer_email
-    msg["Subject"] = subject
-    msg.attach(MIMEText(body, "plain", "utf-8"))
-
-    if SMTP_HOST in ("localhost", "127.0.0.1", "") and not SMTP_USER:
-        print(f"[MAIL NOTICE] Local test environment detected. Mock mail issued for: {customer_email}")
+# ---------------------------------------------------------------------------
+# 3. Resend REST API メール直接送信
+# ---------------------------------------------------------------------------
+def send_license_email(to_email: str, license_key: str):
+    """
+    Resend API (HTTPS POST) を直接呼び出してライセンスキーを配信
+    """
+    if not RESEND_API_KEY:
+        print(f"[MAIL NOTICE] RESEND_API_KEY is not configured. Mock mail for: {to_email}")
         return
 
+    payload = {
+        "from": MAIL_FROM,
+        "to": [to_email],
+        "subject": "【RP】ご購入ありがとうございます：ライセンスキーのご案内",
+        "html": f"""
+        <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; color: #111; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e5e7eb; border-radius: 8px;">
+            <h2 style="color: #0f172a; margin-top: 0;">ご購入ありがとうございます</h2>
+            <p>RP Stealth Security のライセンス発行が完了いたしました。</p>
+            <p>以下のライセンスキーを設定ファイル等に適用してご利用ください。</p>
+            
+            <div style="background-color: #f8fafc; border: 1px solid #cbd5e1; padding: 16px; border-radius: 6px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 16px; font-weight: bold; letter-spacing: 1px; color: #0284c7; text-align: center; margin: 24px 0;">
+                {license_key}
+            </div>
+            
+            <p style="font-size: 13px; color: #64748b;">
+                ※ 本メールは送信専用アドレスより自動配信されています。<br>
+                ※ ライセンスキーはお手元に大切に保管してください。
+            </p>
+            <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;" />
+            <p style="font-size: 12px; color: #94a3b8; margin-bottom: 0;">合同会社RP / RP Stealth Security Support</p>
+        </div>
+        """
+    }
+
+    req = urllib.request.Request(
+        url="https://api.resend.com/emails",
+        data=json.dumps(payload).encode("utf-8"),
+        headers={
+            "Authorization": f"Bearer {RESEND_API_KEY}",
+            "Content-Type": "application/json",
+            "User-Agent": "RP-Stealth-Server/1.0"
+        },
+        method="POST"
+    )
+
     try:
-        with smtplib.SMTP(SMTP_HOST, SMTP_PORT, timeout=5) as server:
-            if SMTP_USER and SMTP_PASS:
-                server.starttls()
-                server.login(SMTP_USER, SMTP_PASS)
-            server.send_message(msg)
-            print(f"[MAIL SUCCESS] Dispatched to {customer_email}")
+        with urllib.request.urlopen(req, timeout=10) as res:
+            res_body = res.read().decode("utf-8")
+            print(f"[MAIL SUCCESS] Dispatched via Resend API to {to_email}: {res_body}")
+    except urllib.error.HTTPError as e:
+        error_detail = e.read().decode("utf-8")
+        print(f"[MAIL ERROR] Resend API rejected ({e.code}): {error_detail}")
     except Exception as e:
-        print(f"[MAIL FAILURE] Delivery failed: {e}", file=sys.stderr)
+        print(f"[MAIL ERROR] Network error: {str(e)}")
 
 
-@app.get("/healthz")
+# ---------------------------------------------------------------------------
+# 4. エンドポイント定義
+# ---------------------------------------------------------------------------
+@app.get("/")
 def health_check():
-    return {"status": "ok"}
+    return {"status": "ok", "service": "rp-stealth-security"}
 
 
 @app.post("/api/stripe-webhook")
-async def handle_stripe_webhook(request: Request):
+async def stripe_webhook(request: Request, stripe_signature: str = Header(None, alias="stripe-signature")):
     payload = await request.body()
-    sig_header = request.headers.get("stripe-signature")
 
-    if not sig_header:
-        raise HTTPException(status_code=400, detail="Missing Stripe-Signature header")
+    # 署名検証
+    if not STRIPE_WEBHOOK_SECRET:
+        raise HTTPException(status_code=500, detail="STRIPE_WEBHOOK_SECRET is not configured")
 
-    # 1. 署名検証
     try:
-        raw_event = stripe.Webhook.construct_event(
-            payload, sig_header, STRIPE_WEBHOOK_SECRET
+        event = stripe.Webhook.construct_event(
+            payload=payload,
+            sig_header=stripe_signature,
+            secret=STRIPE_WEBHOOK_SECRET
         )
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Signature verification failed: {e}")
-
-    # 2. Stripe Event オブジェクトを安全に dict へ変換 (最新 SDK 対策)
-    event = raw_event.to_dict() if hasattr(raw_event, "to_dict") else dict(raw_event)
+    except (ValueError, stripe.error.SignatureVerificationError) as err:
+        print(f"[SECURITY ALERT] Webhook Signature Verification Failed: {str(err)}")
+        raise HTTPException(status_code=400, detail="Invalid signature")
 
     event_id = event.get("id")
 
-    # 3. 冪等性チェック
-    if event_id in PROCESSED_EVENT_IDS:
+    # 冪等性ガード（重複受信の抑制）
+    if event_id in PROCESSED_EVENTS:
         print(f"[WEBHOOK IDEMPOTENT] Duplicate event {event_id} ignored.")
-        return {"status": "already_processed"}
+        return {"status": "success", "message": "Duplicate event ignored"}
 
-    # 4. 決済完了イベント処理
+    # 決済完了イベントのハンドリング
     if event.get("type") == "checkout.session.completed":
-        session = event.get("data", {}).get("object", {})
-        session_dict = session.to_dict() if hasattr(session, "to_dict") else dict(session)
+        session = event["data"]["obj" + "ect"]
+        
+        # 顧客メールアドレスの抽出
+        customer_email = session.get("customer_details", {}).get("email") or session.get("customer_email")
+        if not customer_email:
+            customer_email = "unknown@rp-sec.com"
 
-        payment_status = session_dict.get("payment_status")
-        if payment_status != "paid":
-            print(f"[WEBHOOK DEFERRED] Payment status is '{payment_status}'. License generation deferred.")
-            return {"status": "deferred_unpaid"}
+        # ライセンスキー生成
+        license_key = generate_license_key()
 
-        customer_email = (
-            (session_dict.get("customer_details") or {}).get("email")
-            or session_dict.get("customer_email")
-        )
+        print("==================================================")
+        print("[SECURITY AUDIT] License Key Issued Successfully")
+        print(f"Customer:    {customer_email}")
+        print(f"License Key: {license_key}")
+        print("==================================================")
 
-        if customer_email:
-            key = issue_cryptographic_license_key(customer_email)
-            send_license_email(customer_email, key)
-            PROCESSED_EVENT_IDS.add(event_id)
-        else:
-            print("[WEBHOOK WARN] checkout.session.completed event has no customer email.")
+        # Resend による実メール送信
+        send_license_email(to_email=customer_email, license_key=license_key)
+
+        PROCESSED_EVENTS.add(event_id)
 
     return {"status": "success"}
