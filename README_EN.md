@@ -97,7 +97,6 @@ RP Stealth Security is engineered with a **game-theoretic economic deterrent**:
 ## 🚀 Quick Deployment (Under 3 Minutes)
 
 ### 1. Docker Reverse Proxy (WordPress, PHP, Node.js, etc.)
-
 ```bash
 docker run -d \
   -p 80:80 \
@@ -106,3 +105,22 @@ docker run -d \
   -e LICENSE_KEY="YOUR_KEY" \
   -e MODE="active_deception" \
   rpllc/rp-stealth-shield:latest
+```
+
+### 2. Python / FastAPI Middleware
+```python
+from fastapi import FastAPI
+import rp_stealth_security as rp
+
+app = FastAPI()
+app.add_middleware(
+    rp.StealthSecurityMiddleware,
+    license_key="YOUR_KEY",
+    mode="active_deception"
+)
+```
+
+👉 **[Get Your Commercial License (Instant Automated Issuance)](https://buy.stripe.com/eVq4gz8ND2Nx9Vscr1f3a00)**  
+*(※Upon Stripe checkout, your license key is immediately dispatched from `support@rp-sec.com`)*
+
+* Commercial usage requires an active subscription. Refer to [LEGAL.md](./LEGAL.md) for legal disclosures.
