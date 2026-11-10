@@ -13,7 +13,7 @@ setup(
     ],
     author="RP LLC",
     author_email="support@rp-sec.com",
-    description="RP Stealth Security V9 Suite",
+    description="Active Deception Stealth Trap Security Shield for Web Systems",
     classifiers=[
         "Programming Language :: Python :: 3",
         "Operating System :: OS Independent",
