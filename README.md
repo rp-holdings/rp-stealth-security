@@ -1,68 +1,28 @@
-# RP Stealth Security V9 (Enterprise Edition)
+# 🥷 RP Stealth Security
+## 不正アクセス者が罠にはまり、裏社会で信用を失って自滅する。
+### 従来の「防戦一方の消耗戦」を終わらせる、Webシステム向け能動的欺瞞（Active Deception）セキュリティ
 
-[![License](https://img.shields.io/badge/License-Proprietary-blue.svg)](LEGAL.md)
-[![Python](https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12-brightgreen.svg)]()
-[![Stripe Protected](https://img.shields.io/badge/Payments-Stripe%20Automated-635BFF.svg)](LEGAL.md)
+[![License: Commercial](https://img.shields.io/badge/license-Commercial-blue.svg)](https://buy.stripe.com/eVq4gz8ND2Nx9Vscr1f3a00)
+[![Deployment: Docker / Reverse Proxy](https://img.shields.io/badge/deploy-Docker%20%2F%20Proxy-blue.svg)]()
+[![Overhead: <0.2ms](https://img.shields.io/badge/latency%20overhead-%3C0.2ms-orange.svg)]()
+[![Target: All Web Systems](https://img.shields.io/badge/target-WordPress%20%2F%20Web%20Apps-brightgreen.svg)]()
 
-[English](#english-overview) | [日本語](#日本語概要)
+> **「なぜ、年間何億円ものセキュリティ予算を投じる大企業が、次々と情報漏洩を起こすのか？」**  
+> 誠実にログを監視し、パッチを当て続けてきたすべてのシステム担当者・企業へ。  
+> 
+> 限界を迎えているのは、あなたのスキルでも、製品の性能でもありません。  
+> **「攻撃を検知して 403 Forbidden（アクセス拒否）で弾く」という、従来の防御のルールそのものが攻撃者を育てていたからです。**  
+> 
+> RP Stealth Security は、侵入者をブロックしません。  
+> 巧妙な罠に誘い込み、無意味な偽データを掴ませて手ぶらで帰らせ、時間・計算資源・裏社会での信用のすべてを奪って**「割に合わない」と自滅させる**、全く新しいアプローチのセキュリティシステムです。
 
----
-
-## 日本語概要
-
-RP Stealth Security V9 は、ゼロ露出・動的デコイルーティング技術を搭載した次世代型エンタープライズ・サイバーセキュリティ・スイートです。従来のファイアウォールやWAFのように「検知してブロック（遮断を敵に認知させる）」のではなく、**外部偵察スキャンを完全無力化（ステルス化）し、攻撃者を無害な隔離デコイ層へ自動転送**します。
-
-### 従来型セキュリティ製品との防御比較
-
-| 項目 | 従来のWAF / UTM | RP Stealth Security V9 |
-| :--- | :--- | :--- |
-| **外部偵察（ポートスキャン等）** | 拒絶（RST/Drop）を返し存在を暴露 | 応答そのものを完全ステルス化（ゼロ露出） |
-| **不正アクセスへの対応** | IPブロック（攻撃者に遮断を覚知される） | 動的デコイルーティング（隔離環境へ幽閉） |
-| **標的型・執拗な攻撃者** | IP変更・別経路で再試行される | デコイ層内で無駄な試行を消費させ無力化 |
-| **ライセンス自動化** | 手動認証・キー管理の遅延 | Stripe Webhook連携による暗号学的即時自動発行 |
-
-### 商用ライセンスの購入
-
-本製品はサブスクリプション方式で提供されています。決済完了後、Stripe Webhook により暗号学的ライセンスキーが即時自動発行され、ご登録メールアドレスへ送付されます。
-
-- **Enterprise Monthly License**: **¥49,800 / 月（税込）**
-- **決済リンク**: [RP Stealth Security V9 を購入する（Stripe安全決済）](https://buy.stripe.com/eVq4gz8ND2Nx9Vscr1f3a00)
+👉 **[専門知識がない方向けの「超簡単導入マニュアル（NON-TECH-GUIDE）」はこちら](./NON-TECH-GUIDE.md)**
 
 ---
 
-## English Overview
+## 🚨 誰も言えなかった「サイバー攻撃が絶対に止まらない構造的理由」
 
-RP Stealth Security V9 is a next-generation enterprise cyber defense suite equipped with Zero-Exposure Reconnaissance Barriers and Dynamic Decoy Routing. Rather than simply blocking and alerting attackers, V9 completely conceals network footprints and silently diverts hostile probes into isolated decoy layers.
+連日報道される大企業の不正アクセスや個人情報流出。  
+被害に遭った組織は決して手を抜いていたわけではありません。何重もの高額 WAF を張り、厳格なポリシーで運用していました。
 
-### Comparison Matrix
-
-| Feature | Legacy WAF / UTM | RP Stealth Security V9 |
-| :--- | :--- | :--- |
-| **Reconnaissance Probing** | Drops/Rejects packets (Exposes presence) | Complete stealth silence (Zero exposure) |
-| **Intrusion Response** | Static IP bans (Alerts the adversary) | Dynamic Decoy Routing (Transparent quarantine) |
-| **Persistent Threats** | Attacker switches IP and retries | Absorbs malicious payloads in harmless sinkholes |
-| **License Provisioning** | Manual processing delays | Fully automated cryptographic Stripe webhook |
-
-### Commercial Licensing
-
-Available via enterprise subscription. License keys are cryptographically generated (CSPRNG) and dispatched immediately upon payment confirmation.
-
-- **Enterprise License**: **JPY 49,800 / month**
-- **Direct Purchase**: [Subscribe via Stripe Secure Checkout](https://buy.stripe.com/eVq4gz8ND2Nx9Vscr1f3a00)
-
----
-
-## 体系・機能構成
-
-1. **Reconnaissance Barrier (`rp_stealth_security/recon_barrier.py`)**: 外部偵察スキャン、Botプローブを低遅延で完全遮断・ステルス化
-2. **Decoy Router (`rp_stealth_security/decoy_router.py`)**: 不正侵入試行トラフィックをリアルタイムで隔離ハニーポットへルーティング
-3. **Cryptographic License Engine (`rp_stealth_security/license_validator.py`)**: CSPRNG暗号学的キー発行・HMAC検証モジュール
-4. **Stripe Webhook Gateway (`webhook_server.py`)**: 決済連動ライセンス自動発行・重複遮断・非同期配信
-
----
-
-## インストールと起動手順
-
-### 1. 依存ライブラリのインストール
-```bash
-pip install -r requirements.txt
+それなのに防ぎきれないのは、**現代のサイバー戦のルールが守る側に圧倒的に不利だから**です。
