@@ -38,6 +38,34 @@
 
 ---
 
+## 🛡️ なぜ安全なのか？（導入企業が絶対にリスクを負わない4大理由）
+
+従来のセキュリティツール導入で最も恐れられるのは、「誤検知による売上損失」や「ツールの不具合・負荷によるシステムダウン」です。RP Stealth Security は、以下の絶対安全原則に基づき設計されています。
+
+1. **フェイルオープン（Fail-Open）の徹底**
+   * 万一の例外処理、パース失敗、メモリ圧迫、ライセンスエラー等が発生しても、正規のアクセスを遮断（500/403）することは絶対にありません。直ちに正規通信をそのまま通過させ、既存業務やサービスを100%継続させます。
+2. **誤検知（False Positive）による正規ユーザー排除ゼロ**
+   * 従来型WAFのように怪しい通信を一律遮断するのではなく、悪意あるスキャンに対してのみ「偽データ」を返却します。一般ユーザーの入力が誤って検知閾値に触れた場合でも、サイトの閲覧や通常機能に致命的なアクセス遮断を起こしません。
+3. **データ不保持・完全ステートレス**
+   * お客様のデータベースの実データや個人情報を収集・保存・外部送信する仕組みは一切存在しません。メモリ上でインライン処理されるため、製品自体からの情報漏洩リスクは物理的にゼロです。
+4. **既存インフラへの完全非干渉**
+   * 既存アプリケーション（WordPress、PHP、Node.js、Go、Python等）のコードを1行も改変することなく、手前にリバースプロキシとしてコンテナを配置するだけで稼働します。
+
+---
+
+## 🌐 導入者が増えるほど安全性が加速する「心理的抑止のネットワーク効果」
+
+RP Stealth Security は、**「社会全体で普及すればするほど、攻撃者のリスクが指数関数的に増大する」**というゲーム理論的抑止力を備えています。
+
+* **攻撃者の心理的パラノイア（疑心暗鬼）**
+  * 攻撃者が苦労して盗み出したデータが「本物か、RP Stealth による偽データか」を攻撃者自身が判別できなくなります。
+* **裏社会での経済的・信用的自滅**
+  * 盗んだデータをダークウェブや地下市場で売却・公開した際、それが無価値な偽装データであることが露呈すれば、攻撃グループは地下コミュニティで即座に信用を失い、BAN（追放）されます。
+* **「攻撃するだけ赤字」という不可逆の抑止構造**
+  * RP Stealth Security の導入サイトが増えるほど、攻撃者にとって「時間とインフラ費用をかけてハッキングしても、掴まされるのはゴミデータばかり」という確率が急上昇します。結果として、攻撃者のビジネスモデルそのものが崩壊し、標的から完全に除外されるようになります。
+
+---
+
 ## ⚖️ ステルストラップ迎撃の流れ
 
 1. **攻撃者による探索**（SQLi・パス走査・APIキー探索等）
@@ -76,111 +104,10 @@
 
 ### 1. Docker で起動する場合（WordPress / 各種Webアプリ）
 ```bash
-docker run -d \
-  -p 80:80 \
-  -p 443:443 \
-  -e BACKEND_URL="http://your-site:8080" \
-  -e LICENSE_KEY="YOUR_KEY" \
-  -e MODE="active_deception" \
+docker run -d \\
+  -p 80:80 \\
+  -p 443:443 \\
+  -e BACKEND_URL="http://your-site:8080" \\
+  -e LICENSE_KEY="YOUR_KEY" \\
+  -e MODE="active_deception" \\
   rpllc/rp-stealth-shield:latest
-```
-
-### 2. Python / FastAPI に直接組み込む場合
-```python
-from fastapi import FastAPI
-import rp_stealth_security as rp
-
-app = FastAPI()
-app.add_middleware(
-    rp.StealthSecurityMiddleware,
-    license_key="YOUR_KEY",
-    mode="active_deception"
-)
-```
-
-👉 **[月額 ¥49,800 で商用ライセンスを取得する（即時自動発行）](https://buy.stripe.com/eVq4gz8ND2Nx9Vscr1f3a00)**  
-*(※Stripe 決済完了後、公式ドメイン `support@rp-sec.com` よりライセンスキーが即座に自動送信されます)*
-
-* 特定商取引法に基づく表記および運営者情報は [LEGAL.md](./LEGAL.md) をご確認ください。
-
-<br>
-
----
----
-
-# 🌐 RP Stealth Security (English Version)
-## Attackers Trap Themselves and Self-Destruct.
-### End the Asymmetric War of Attrition. The World's First Stealth Trap (Active Deception) Security Shield for All Web Systems.
-
-[![License: Commercial](https://img.shields.io/badge/license-Commercial-blue.svg)](https://buy.stripe.com/eVq4gz8ND2Nx9Vscr1f3a00)
-[![Deployment: Docker / Reverse Proxy](https://img.shields.io/badge/deploy-Docker%20%2F%20Proxy-blue.svg)]()
-[![Overhead: <0.2ms](https://img.shields.io/badge/latency%20overhead-%3C0.2ms-orange.svg)]()
-[![Target: All Web Systems](https://img.shields.io/badge/target-WordPress%20%2F%20Web%20Apps-brightgreen.svg)]()
-
-> ### **"A complete 180-degree paradigm shift from traditional security."**
-> 
-> Enterprise giants keep suffering data breaches because **blocking attackers with `403 Forbidden` actually trains them to succeed.**
-> 
-> RP Stealth Security never blocks attackers.  
-> Instead, we lure them into an inescapable stealth trap, hand them worthless dummy data disguised as real records, drain their computing resources, and destroy their credibility in underground markets.
-
----
-
-## 🚨 The Flaw of Traditional Defense
-
-* **[Defenders]** Must be 100% flawless across thousands of paths 24/7/365. (Failure Cost: Millions of Dollars)
-* **[Attackers]** Run automated bots with zero risk until they find one flaw. (Failure Cost: $0)
-
-Traditional WAFs return `403 Forbidden`, signaling to bots to modify their payload and retry. RP Stealth deceives them with `200 OK` and synthetic dummy data—ruining their business model while keeping your servers unharmed.
-
----
-
-## 🥋 Three Core Deception Mechanisms
-
-* **Ghost Payload Injection**: Responds with `200 OK` and realistic dummy data upon attack detection. Attackers assume success and cease probing.
-* **Reverse Tarpit**: Artificially throttles response streams back to aggressive bots, freezing their tools and driving up their infrastructure costs.
-* **Zero Signature**: Outputs no vendor headers or unique error pages, preventing attackers from detecting the defense mechanism.
-
----
-
-## 💰 Cost vs. Value Comparison
-
-| Metric | Enterprise WAF | **RP Stealth Security** |
-|:---|:---:|:---:|
-| **Defense Strategy** | Passive 403 Blocking | **Stealth Trap (Forces Self-Destruction)** |
-| **Deterrence** | Low (Attacker retries) | **Maximum (Underground Reputation Ruined)** |
-| **Pricing** | $5,000+/mo | **Flat ¥49,800/mo (~$330 USD)** |
-| **Setup Time** | Weeks (Complex routing) | **Under 3 minutes (Docker drop-in)** |
-
----
-
-## 🚀 Quick Deployment (Under 3 Minutes)
-
-### 1. Docker Reverse Proxy (WordPress, PHP, Node.js, etc.)
-```bash
-docker run -d \
-  -p 80:80 \
-  -p 443:443 \
-  -e BACKEND_URL="http://your-site:8080" \
-  -e LICENSE_KEY="YOUR_KEY" \
-  -e MODE="active_deception" \
-  rpllc/rp-stealth-shield:latest
-```
-
-### 2. Python / FastAPI Middleware
-```python
-from fastapi import FastAPI
-import rp_stealth_security as rp
-
-app = FastAPI()
-app.add_middleware(
-    rp.StealthSecurityMiddleware,
-    license_key="YOUR_KEY",
-    mode="active_deception"
-)
-```
-
-👉 **[Get Your Commercial License (Instant Automated Issuance)](https://buy.stripe.com/eVq4gz8ND2Nx9Vscr1f3a00)**  
-*(※Upon Stripe checkout, your license key is immediately dispatched from `support@rp-sec.com`)*
-
-* Commercial usage requires an active subscription. Refer to [LEGAL.md](./LEGAL.md) for legal disclosures.
