@@ -1,5 +1,3 @@
-<span id="japanese-version"></span>
-
 # 🥷 RP Stealth Security
 ## 不正アクセス者が勝手に自滅する、最強の新発想セキュリティ。
 ### 従来の防戦一方の消耗戦を終わらせる、世界初・Webシステム向け「ステルストラップ（Active Deception）」迎撃シールド
@@ -12,7 +10,7 @@
 ---
 
 > 🌐 **Looking for the English documentation?**  
-> **[👉 Click here to jump to English Version](#english-version)**
+> **[👉 Read the English Version (README_EN.md)](./README_EN.md)**
 
 ---
 
@@ -109,10 +107,29 @@ RP Stealth Security は、**「社会全体で普及すればするほど、攻�
 
 ### 1. Docker で起動する場合（WordPress / 各種Webアプリ）
 ```bash
-docker run -d \\
-  -p 80:80 \\
-  -p 443:443 \\
-  -e BACKEND_URL="http://your-site:8080" \\
-  -e LICENSE_KEY="YOUR_KEY" \\
-  -e MODE="active_deception" \\
+docker run -d \
+  -p 80:80 \
+  -p 443:443 \
+  -e BACKEND_URL="http://your-site:8080" \
+  -e LICENSE_KEY="YOUR_KEY" \
+  -e MODE="active_deception" \
   rpllc/rp-stealth-shield:latest
+```
+
+### 2. Python / FastAPI に直接組み込む場合
+```python
+from fastapi import FastAPI
+import rp_stealth_security as rp
+
+app = FastAPI()
+app.add_middleware(
+    rp.StealthSecurityMiddleware,
+    license_key="YOUR_KEY",
+    mode="active_deception"
+)
+```
+
+👉 **[月額 ¥49,800 で商用ライセンスを取得する（即時自動発行）](https://buy.stripe.com/eVq4gz8ND2Nx9Vscr1f3a00)**  
+*(※Stripe 決済完了後、公式ドメイン `support@rp-sec.com` よりライセンスキーが即座に自動送信されます)*
+
+* 特定商取引法に基づく表記および運営者情報は [LEGAL.md](./LEGAL.md) をご確認ください。
