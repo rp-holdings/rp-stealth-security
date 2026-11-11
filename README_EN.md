@@ -1,4 +1,6 @@
 # 🌐 RP Stealth Security (English Documentation)
+> 📖 **Deep Dive Technical Architecture Article**:  
+> [Defeat Hackers by Faking "200 OK": The Architecture of Active Deception](https://zenn.dev/rp_holdings/articles/20ee5b526ed619/en)
 ## Attackers Trap Themselves and Self-Destruct.
 ### End the Asymmetric War of Attrition. The World's First Stealth Trap (Active Deception) Security Shield for All Web Systems.
 
