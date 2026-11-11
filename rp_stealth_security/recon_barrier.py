@@ -1,30 +1,14 @@
-import time
-from typing import Dict, Tuple
+import re
 
 class ReconBarrier:
-    """
-    Reconnaissance Barrier: 外部スキャンおよび偵察プローブを低遅延で即時隔離
-    """
-    def __init__(self, rate_limit: int = 60, window_sec: int = 60):
-        self.rate_limit = rate_limit
-        self.window_sec = window_sec
-        self.access_logs: Dict[str, list] = {}
-
-    def is_probe_detected(self, client_ip: str, path: str, headers: dict) -> Tuple[bool, str]:
-        now = time.time()
-        
-        # 悪意あるスキャンパス検知
-        suspicious_paths = [".env", ".git", "wp-admin", "phpmyadmin", "shell", ".aws"]
-        for sp in suspicious_paths:
-            if sp in path.lower():
-                return True, f"Suspicious reconnaissance path: {path}"
-
-        # レートリミット検査
-        history = self.access_logs.setdefault(client_ip, [])
-        self.access_logs[client_ip] = [t for t in history if now - t < self.window_sec]
-        self.access_logs[client_ip].append(now)
-
-        if len(self.access_logs[client_ip]) > self.rate_limit:
-            return True, "Rate limit threshold breached (Recon Probe)"
-
-        return False, "Clear"
+    MALICIOUS_PATTERNS = [
+        re.compile(r"(\.\./|\.\.\)", re.IGNORECASE),
+        re.compile(r"(union\s+select|select\s+.*\s+from|insert\s+into|drop\s+table)", re.IGNORECASE),
+        re.compile(r"(<script|javascript:|onerror=)", re.IGNORECASE),
+        re.compile(r"(etc/passwd|windows/win.ini|\.env|\.git)", re.IGNORECASE),
+        re.compile(r"(wp-config\.php|phpinfo|eval\(|base64_decode)", re.IGNORECASE)
+    ]
+    @classmethod
+    def is_suspicious(cls, path: str, query_string: str = "", body: str = "") -> bool:
+        target = f"{path}?{query_string} {body}"
+        return any(pattern.search(target) for pattern in cls.MALICIOUS_PATTERNS)

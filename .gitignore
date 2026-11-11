@@ -1,27 +1,7 @@
-# Environments & Secrets (NEVER COMMIT)
 .env
-.env.*
-!.env.example
-
-# Python
+.env.local
 __pycache__/
-*.py[cod]
-*$py.class
-*.so
+*.pyc
 build/
 dist/
 *.egg-info/
-venv/
-.venv/
-env/
-
-# Databases & Runtime State
-*.db
-*.sqlite3
-*.log
-
-# IDE & OS
-.vscode/
-.idea/
-.DS_Store
-Thumbs.db
