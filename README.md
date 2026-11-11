@@ -1,4 +1,6 @@
 # 🥷 RP Stealth Security
+> 📖 **技術解説記事（Zenn）**:  
+> [「攻撃成功（200 OK）」を偽装してハッカーを自滅させる。能動的欺瞞（Active Deception）という新発想](https://zenn.dev/rp_holdings/articles/20ee5b526ed619)
 ## 不正アクセス者が勝手に自滅する、最強の新発想セキュリティ。
 ### 従来の防戦一方の消耗戦を終わらせる、世界初・Webシステム向け「ステルストラップ（Active Deception）」迎撃シールド
 
