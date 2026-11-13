@@ -133,7 +133,7 @@ app.add_middleware(
 * **Community Edition (Free / OSS)**:
   Free for personal use, research, technical evaluation, and small-scale environments under the MIT License. This software is provided "AS-IS" without warranty of any kind, and individual support is not included.
 * **Enterprise / Commercial License (Paid)**:
-  A commercial license is required for production deployment by corporations, municipalities, public institutions, and large-scale commercial services, as well as for access to high-traffic optimization modules and advanced deception templates.
+  A commercial license is required for production deployment by corporations, municipalities, public institutions, and commercial services, as well as to unlock all built-in features (advanced deception templates and high-traffic optimization mode). *(Note: Custom development is not provided; all features are unlocked automatically upon entering the license key into the standard package.)*
   * **Purchase / License**: Commercial licenses can be obtained online via the Stripe checkout link listed above (or in the repository's About section).
   * **Support Policy**: Due to our lean development structure, we do not offer phone support, on-site maintenance, or 24/7 dedicated monitoring. All inquiries are handled asynchronously via email or GitHub Issues on a best-effort basis.
   * **Contact**: `support@rp-sec.com`
