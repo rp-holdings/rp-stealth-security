@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="rp-stealth-security",
-    version="9.0.0",
+    version="10.0.0",
     packages=find_packages(),
     install_requires=[
         "fastapi>=0.110.0",
