@@ -1,4 +1,4 @@
-# RP Stealth Security (v10.0.0)
+# RP Stealth Security (v10.0.1)
 
 **Active Deception Reverse Proxy & Middleware for Web Systems**
 
@@ -12,7 +12,7 @@ Traditional perimeter defenses (WAFs and IP blocklists) inadvertently provide re
 
 * **Stealth `200 OK` Deception Responses**
   * Returns `200 OK` status codes paired with configurable, harmless decoy data (JSON, HTML, or synthetic document previews) upon detecting automated vulnerability scans or unauthorized probes.
-* **External File-Sharing Link Protection (`ShareDeceptionMiddleware` / New in v10.0.0)**
+* **External File-Sharing Link Protection (`ShareDeceptionMiddleware` / New in v10.0.1)**
   * Protects shared URLs and document delivery endpoints. When an access request originates from an unrecognized network context, anomalous fingerprint, or enumeration query, the middleware isolates the authentic file and serves a read-only decoy document while logging forensic metadata.
 * **Socket Tarpit & Forensic Telemetry**
   * Introduces controlled response latency (Tarpit) to degrade the throughput of automated scanners and records structured forensic logs for incident investigation.
@@ -46,7 +46,7 @@ app = FastAPI()
 # Core Active Deception Middleware
 app.add_middleware(StealthMiddleware)
 
-# Deception Protection for Shared Links & Document Endpoints (v10.0.0)
+# Deception Protection for Shared Links & Document Endpoints (v10.0.1)
 app.add_middleware(
     ShareDeceptionMiddleware,
     protected_prefixes=["/share/", "/docs/"],
