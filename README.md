@@ -1,4 +1,4 @@
-# RP Stealth Security (v10.0.0)
+# RP Stealth Security (v10.0.1)
 
 **Webシステム向け「能動的欺瞞（Active Deception）」リバースプロキシ＆ミドルウェア**
 
@@ -12,7 +12,7 @@
 
 * **正常応答偽装（`200 OK` Stealth Deception）**
   * 異常プローブや脆弱性スキャンを検知した際、エラーコードを返さず `200 OK` と無害なダミーペイロード（JSON / HTML / ダミー資料）を返却します。
-* **外部ファイル共有リンク防御モジュール（`ShareDeceptionMiddleware` / v10.0.0新機能）**
+* **外部ファイル共有リンク防御モジュール（`ShareDeceptionMiddleware` / v10.0.1新機能）**
   * 共有URLやドキュメント配信エンドポイントに対し、許可されていないネットワーク・端末指紋・異常な列挙クエリからのアクセスを検知した場合、本物データを隔離したまま閲覧専用の無害なダミー資料データを返却し、アクセス痕跡を即座に記録します。
 * **ソケット遅延（Tarpit）およびフォレンジック記録**
   * 自動化されたスキャンボットによる連続リクエストの探索効率を低下させる応答遅延処理と、インシデント調査に必要なアクセスログ記録機能を備えています。
@@ -32,7 +32,7 @@ docker run -d \
   -p 80:80 -p 443:443 \
   -e BACKEND_URL="http://127.0.0.1:8080" \
   -e LICENSE_KEY="RP9-YOUR-PURCHASED-KEY" \
-  rp-holdings/rp-stealth-security:10.0.0
+  rp-holdings/rp-stealth-security:10.0.1
 ```
 
 ### Python（FastAPI）ミドルウェアとしての組み込み例
