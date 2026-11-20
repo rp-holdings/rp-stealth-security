@@ -12,7 +12,7 @@ setup(
         "pydantic>=2.6.0",
         "requests>=2.31.0",
     ],
-    author="RP LLC",
+    author="RP Stealth Security",
     author_email="support@rp-sec.com",
     description="Active Deception Stealth Trap Security Shield for Web Systems",
     long_description=open("README.md", encoding="utf-8").read(),
