@@ -3,6 +3,16 @@
 > [Defeat Hackers by Faking "200 OK": The Architecture of Active Deception](https://zenn.dev/rp_holdings/articles/20ee5b526ed619/en)
 ## Attackers Trap Themselves and Self-Destruct.
 ### End the Asymmetric War of Attrition. The World's First Stealth Trap (Active Deception) Security Shield for All Web Systems.
+### 🆕 v10.0.0 New Feature: External File-Sharing Link Active Deception (Share-Deception)
+Against unauthorized long-term lurking access caused by misconfigured permissions or leaked sharing URLs, this module returns a normal status (`200 OK`) paired with harmless dummy documents ("empty vault") instead of blocking with `403` errors. It isolates genuine data without alerting attackers to the defense mechanism while immediately recording forensic access traces.
+
+### 🏛️ 6 Core Safety & Compliance Standards for Government & Enterprise
+1. **Legal Compliance**: Strictly passive deception at your own edge—zero hack-back or external intrusion.
+2. **Secrecy of Communications & Privacy**: 100% edge-contained with zero payload storage (No-Disk Write). File contents and PII are never transmitted externally.
+3. **Supply Chain & Code Integrity**: Hash-verified and signed package distribution to prevent tampering.
+4. **Network Availability (Fail-Open Design)**: Even if the middleware halts, legitimate file-sharing traffic automatically passes through with zero downtime.
+5. **Asynchronous Autonomous Operation**: Instant license key issuance upon Stripe checkout for immediate production deployment.
+6. **OSS Transparency**: Full source code of the Community Edition (MIT License) is publicly auditable.
 
 [![License: Commercial](https://img.shields.io/badge/license-Commercial-blue.svg)](https://buy.stripe.com/eVq4gz8ND2Nx9Vscr1f3a00)
 [![Deployment: Docker / Reverse Proxy](https://img.shields.io/badge/deploy-Docker%20%2F%20Proxy-blue.svg)]()
